@@ -3,53 +3,67 @@ package de.ad.sudoku;
 import java.util.Random;
 
 /**
- * A Generator to generate random Sudoku {@link Grid} instances.
+ * From Github:https://github.com/a11n/sudoku
+ * 生成器
  */
 public class Generator {
-  private Solver solver;
+    /**
+     * 解法器
+     */
+    private Solver solver;
 
-  /**
-   * Constructs a new Generator instance.
-   */
-  public Generator() {
-    this.solver = new Solver();
-  }
-
-  /**
-   * Generates a random {@link Grid} instance with the given number of empty {@link Grid.Cell}s.
-   * <br><br>
-   * Note: The complexity for a human player increases with an higher amount of empty {@link Grid.Cell}s.
-   * @param numberOfEmptyCells the number of empty {@link Grid.Cell}s
-   * @return a randomly filled Sudoku {@link Grid} with the given number of empty {@link Grid.Cell}s
-   */
-  public Grid generate(int numberOfEmptyCells) {
-    Grid grid = generate();
-
-    eraseCells(grid, numberOfEmptyCells);
-
-    return grid;
-  }
-
-  private void eraseCells(Grid grid, int numberOfEmptyCells) {
-    Random random = new Random();
-    for (int i = 0; i < numberOfEmptyCells; i++) {
-      int randomRow = random.nextInt(9);
-      int randomColumn = random.nextInt(9);
-
-      Grid.Cell cell = grid.getCell(randomRow, randomColumn);
-      if (!cell.isEmpty()) {
-        cell.setValue(0);
-      } else {
-        i--;
-      }
+    /**
+     * 构造方法 初始化解法器
+     */
+    public Generator() {
+        this.solver = new Solver();
     }
-  }
 
-  private Grid generate() {
-    Grid grid = Grid.emptyGrid();
+    /**
+     * 生成方法
+     *
+     * @param numberOfEmptyCells 参数为需要抹除的格子数量 数量越多相当于难度越大 （剩余可见格子数量建议不少于17个（明数最少数量有证明））
+     * @return
+     */
+    public Grid generate(int numberOfEmptyCells) {
+        // 生成格子
+        Grid grid = generate();
+        // 随机擦除格子
+        eraseCells(grid, numberOfEmptyCells);
+        return grid;
+    }
 
-    solver.solve(grid);
+    /**
+     * 随机擦除指定数量的格子
+     *
+     * @param grid
+     * @param numberOfEmptyCells
+     */
+    private void eraseCells(Grid grid, int numberOfEmptyCells) {
+        Random random = new Random();
+        for (int i = 0; i < numberOfEmptyCells; i++) {
+            int randomRow = random.nextInt(9);
+            int randomColumn = random.nextInt(9);
 
-    return grid;
-  }
+            Grid.Cell cell = grid.getCell(randomRow, randomColumn);
+            if (!cell.isEmpty()) {
+                cell.setValue(0);
+            } else {
+                i--;
+            }
+        }
+    }
+
+    /**
+     * 生成方法
+     *
+     * @return
+     */
+    private Grid generate() {
+        // 先生成空格子
+        Grid grid = Grid.emptyGrid();
+        // 使用解法器进行填数
+        solver.solve(grid);
+        return grid;
+    }
 }
